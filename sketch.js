@@ -1,3 +1,9 @@
+// display the video 
+// play the specific music 
+// background emojis 
+//clapping 
+
+
 var face = [];
 var position = {x:0, y:0};
 var scale = 0;
@@ -11,16 +17,48 @@ var eyeRight = 0;
 var jaw = 0;
 var nostrils = 0;
 var img;
+var capture;
+var laugh;
+var cry;
+var anger;
+var mouth;
+var applause;
+var imgLaugh;
+var imgCry;
 
 function setup() {
-  	createCanvas(800, 800);
+  	createCanvas(900, 900);
 	setupOsc(8338, 3334);
-	img = loadImage('images/image2.png');
+	capture = createCapture(VIDEO);
+	capture.size(320, 240);
+
+	imgLaugh = loadImage('images/laughemojii.png');
+	imgCry = loadImage('images/sademoji.png');
+
+	laugh = loadSound('images/laughing.mp3');
+	laugh.setLoop(true);
+
+	cry = loadSound('images/crying.mp3');
+	cry.setLoop(true);
+
+	applause = loadSound('images/applause.mp3');
+	applause.setLoop(true);
 
 }
 
 function draw() {
 	background('black');
+	image(capture, 0, 0, 300, 300);
+	image(capture, 0, 300, 300, 300);
+	image(capture, 0, 600, 300, 300);
+	image(capture, 300, 0, 300, 300);
+	image(capture, 600, 0, 300, 300);
+	image(capture, 300, 300, 300, 300);
+	image(capture, 600, 300, 300, 300);
+	image(capture, 300, 600, 300, 300);
+	image(capture, 600, 600, 300, 300);
+
+	//image(capture, 400, 400, 320, 240);
 
 	// FACE_OUTLINE : 0 - 16
 	// LEFT_EYEBROW : 17 - 21
@@ -31,18 +69,59 @@ function draw() {
 	// RIGHT_EYE : 42 - 47
 	// INNER_MOUTH : 48 - 59
 	// OUTER_MOUTH : 60 - 65
-	var mouth = map(mouthHeight, 1, 3, 200, 600);
-	var mouth2 = map(mouthHeight, 1, 3, 100, 300);
-	var mouth3 = map(mouthHeight, 1, 3, 300, 700);
-	var mouth4 = map(mouthHeight, 1, 3, 50, 400);
-	var mouth5 = map(mouthHeight, 1, 3, 150, 580);
 
-	imageMode(CENTER);
-	image(img, position.x-60, position.y-40, mouth/9, mouth/9);
-	image(img, position.x-100, position.y-100, mouth2/9, mouth2/9);
-	image(img, position.x-200, position.y+100, mouth3/9, mouth3/9);
-	image(img, position.x-280, position.y-80, mouth4/9, mouth4/9);
-	image(img, position.x-10, position.y+250, mouth5/9, mouth5/9);
+	if(mouthHeight>4 && !laugh.isPlaying()){
+		laugh.play();
+	}
+
+	if(mouthHeight<=4 && laugh.isPlaying()){
+		laugh.pause();
+	}
+
+	if(mouthHeight>4){
+		image(imgLaugh, 150, 150, 100, 100);
+		image(imgLaugh, 450, 150, 100, 100);	
+		image(imgLaugh, 750, 150, 100, 100);	
+		image(imgLaugh, 150, 450, 100, 100);	
+		image(imgLaugh, 150, 750, 100, 100);	
+		image(imgLaugh, 750, 450, 100, 100);
+		image(imgLaugh, 450, 750, 100, 100);	
+		image(imgLaugh, 750, 750, 100, 100);	
+		image(imgLaugh, 450, 450, 100, 100);		
+	}
+
+	if(eyebrowLeft>8 && !cry.isPlaying()){
+		cry.play();	
+	}
+
+	if(eyebrowLeft<=8 && cry.isPlaying()){
+		cry.pause();
+	}
+
+	if (eyebrowLeft>8){
+		image(imgCry, 150, 150, 100, 100);
+		image(imgCry, 450, 150, 100, 100);	
+		image(imgCry, 750, 150, 100, 100);	
+		image(imgCry, 150, 450, 100, 100);	
+		image(imgCry, 150, 750, 100, 100);	
+		image(imgCry, 750, 450, 100, 100);
+		image(imgCry, 450, 750, 100, 100);	
+		image(imgCry, 750, 750, 100, 100);	
+		image(imgCry, 450, 450, 100, 100);
+	}
+
+	//if(NOFACEDETECTED == 0 && !applause.isPlaying()){
+		//applause.play();
+	//}
+
+	//if(NOFACEDETECTED>0 && applause.isPlaying()){
+	//	applause.pause();
+	//}
+
+	//mouth = map(mouthHeight, 1, 3, 200, 600);
+	//imageMode(CENTER);
+	//image(img, position.x, position.y, mouth/9, mouth/9);	
+	
 }
 
 function receiveOsc(address, value) {
@@ -66,19 +145,24 @@ function receiveOsc(address, value) {
 	}
 	else if (address == '/gesture/mouth/height') {
 		mouthHeight = value[0];
-		print(mouthHeight);
+		//print(mouthHeight);
+		//console.log(MouthHeight);
 	}
 	else if (address == '/gesture/eyebrow/left') {
 		eyebrowLeft = value[0];
+		//print(eyebrowLeft);
 	}
 	else if (address == '/gesture/eyebrow/right') {
 		eyebrowRight = value[0];
+		//print(eyebrowRight);
 	}
 	else if (address == '/gesture/eye/left') {
 		eyeLeft = value[0];
 	}
+
 	else if (address == '/gesture/eye/right') {
 		eyeRight = value[0];
+		//print(eyeRight);
 	}
 	else if (address == '/gesture/jaw') {
 		jaw = value[0];
